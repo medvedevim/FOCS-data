@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "rfile=\"data/D16 - 1000 nm_17.02.17_15.02.20.dat\"\n\nto.read = file(rfile, \"rb\")\n\n# counting number of frames in file\nnframes=file.info(rfile)$size/1024\n\n# read file to array of unsigned integers\ntdata<-readBin(to.read, integer(),size=2, n = nframes*512, endian = \"little\", signed = FALSE)\n\n# reshape data to 512xN matrix\ndim(tdata) <- c(512, nframes)\ntdata <- t(tdata)\n\n",
+    "created" : 1488010844071.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4151659741",
+    "id" : "4888B2C6",
+    "lastKnownWriteTime" : 1488013587,
+    "last_content_update" : 1488013587664,
+    "path" : "C:/R/FOCS/script.R",
+    "project_path" : "script.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
