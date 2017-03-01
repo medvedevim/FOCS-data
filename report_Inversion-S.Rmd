@@ -1,0 +1,55 @@
+---
+title: "Результаты ускоренных испытаний волоконно-оптических датчиков коррозии"
+author: "Иван Медведев, ФГУП 'ВИАМ'"
+date: "27 февраля 2017 г."
+output: html_document
+#word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(tools)
+require(stringr)
+require(ggplot2)
+require(pspline)
+require(knitr)
+load(file=".RData")
+find_equilibrium <- function(dataframe, roundv){
+  deriv <- predict(sm.spline(dataframe$Time, dataframe$Reflection), dataframe$Time, 1)
+  max_deriv <- which.max(abs(deriv))
+  tt <- dataframe[max_deriv:nrow(deriv),]
+  return(round(tt[which(tt$Reflection<1e-03)[1],"Time"], roundv))
+}
+```
+
+# Испытания датчиков с напылением покрытий на торец волокна
+
+## Испытания в растворе 0,5 % NaOH
+
+```{r pressure, echo=FALSE}
+for (i in levels(gdata$Alloy))
+{
+  tmp <- gdata[which(gdata$Alloy==i),]
+  print(ggplot(aes(x=Time, y=Reflection, shape=Thickness), data = tmp)+
+    geom_point()+geom_path()+theme_bw()+
+    theme(text = element_text(size=14))+ggtitle(i)+scale_x_continuous(limits=c(0,3500)))
+}
+```
+
+```{r pr, echo=FALSE}
+eqtable <- data.frame(matrix(NA, nrow = 1, ncol = (length(levels(gdata$Thickness))+1)))
+names(eqtable) <- c("Alloy", levels(gdata$Thickness))
+for (i in levels(gdata$Alloy))
+{
+  foo <- c()
+  for (f in levels(gdata$Thickness))
+  {
+    tt <- gdata[which(gdata$Thickness==f & gdata$Alloy==i),]
+    foo <- cbind(foo, find_equilibrium(tt,0))
+  }
+  eqtable <- rbind(eqtable, c(i,as.numeric(foo)))
+  names(eqtable) <- c("Alloy", levels(gdata$Thickness))
+}
+
+kable(eqtable, caption="1")
+```
